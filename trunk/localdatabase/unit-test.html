@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+	 <script type="text/javascript" src="http://code.google.com/apis/gears/gears_init.js"></script>
+	 <script type="text/javascript" src="localdb.js"></script>
+	 <link rel="stylesheet" href="http://github.com/jquery/qunit/raw/master/qunit/qunit.css" type="text/css"/>
+	 <script src="http://code.jquery.com/jquery-latest.js"> </script>
+	 <script type="text/javascript" src="http://github.com/jquery/qunit/raw/master/qunit/qunit.js"></script>
+</head>
+
+        <script>
+              $(document).ready(function(){
+			    var DB_NAME = "LocalDB";
+			    var schema = {"TABLE_NAME":{"ID":"text","COL_1":"text","COL_2":"text"}};
+			    module("LocalDB");
+			    QUnit.moduleStart= function(name) {
+				_db = new LocalDB(DB_NAME);
+			    }
+			    QUnit.log = function(result, message)
+			    {
+					if (window.console && window.console.log)
+					{
+					   window.console.log(result +' :: '+ message);
+					}
+			    }
+			    test("'drop_create' unit test (1)", function()
+			    {
+				_db.drop_create();				
+				ok( _db.isValid(this.schema), "Database schema is consistent" );
+			    });
+			    test("'drop_create' unit test (2)", function()
+			    {
+				_db = new LocalDB(DB_NAME,schema);
+				_db.drop_create();						
+				ok( _db.isValid(schema), "Database schema is consistent" );
+			    });
+			    test("'drop_create' unit test (3)", function()
+			    {
+				_db.drop_create(schema);		
+				ok( _db.isValid(schema), "Database schema is consistent" );
+			    });
+			    test("'stmt list' unit test (1)", function()
+			    {
+					var rows = _db.stmt("select * from TABLE_NAME").list();
+					equals(rows.length,0, 'Expected 0 as the result, result was ' + rows.length);
+			    });
+			    test("'from list' unit test (1)", function()
+			    {
+					var rows = _db.from("TABLE_NAME").list();
+					equals(rows.length,0, 'Expected 0 as the result, result was ' + rows.length);
+			    });
+			    test("'insert run' unit test (1)", function()
+			    {
+					_db.insert({"ID":1,"COL_1":"1","COL_2":"2"},"TABLE_NAME").run();
+					var rows = _db.from("TABLE_NAME").list();					
+					equals(rows.length,1, 'Expected 1 as the result, result was ' + rows.length);
+			    });
+			    test("'insert run' unit test (2)", function()
+			    {
+					_db.insert({"ID":2,"COL_1":"2","COL_2":"2"},"TABLE_NAME").run();
+					var rows = _db.from("TABLE_NAME").list();					
+					equals(rows.length,2, 'Expected 2 as the result, result was ' + rows.length);
+			    });
+			    test("'from each' unit test (1)", function()
+			    {
+					var rows = _db.from("TABLE_NAME").each(function(e) {
+						equals(e.col_2,2 ,'Expected 2 as the result, result was ' + e.col_2);
+					});
+			    });
+			    test("'from order list' unit test (1)", function()
+			    {
+					var rows = _db.from("TABLE_NAME").order({"COL_1":"DESC"}).list();
+					equals(rows.length,2, 'Expected 2 as the result, result was ' + rows.length);
+					equals(rows[0].col_1,2, 'Expected 2 as the result, result was ' + rows[0].col_1);
+					equals(rows[1].col_1,1, 'Expected 2 as the result, result was ' + rows[1].col_1);
+			    });
+			    test("'from where list' unit test", function()
+			    {
+					var rows = _db.from("TABLE_NAME").where({"ID":"1"}).list();					
+					equals(rows.length,1, 'Expected 1 as the result, result was ' + rows.length);
+					rows = _db.from("TABLE_NAME").where({"COL_2":2}).list();					
+					equals(rows.length,2, 'Expected 2 as the result, result was ' + rows.length);
+			    });			    
+			    test("'delete run' unit test (1)", function()
+			    {
+					_db.delete("TABLE_NAME").where({"ID":2}).run();
+					var rows = _db.from("TABLE_NAME").where({"ID":2}).list();					
+					equals(rows.length,0, 'Expected 1 as the result, result was ' + rows.length);
+			    });
+			    test("'from list' unit test (2)", function()
+			    {
+					var rows = _db.from("TABLE_NAME").list();
+					equals(rows.length,1, 'Expected 1 as the result, result was ' + rows.length);
+			    });
+			    test("'from get' unit test (1)", function()
+			    {
+					var row = _db.from("TABLE_NAME").get();
+					equals(row.id,1, 'Expected "1" as the result, result was ' + row.id);
+			    });
+			    test("'from where get' unit test (1)", function()
+			    {
+					var row = _db.from("TABLE_NAME").where({"ID":1}).get();
+					equals(row.id,1, 'Expected "1" as the result, result was ' + row.id);
+			    });
+			    test("'update run' unit test (1)", function()
+			    {
+					_db.update("TABLE_NAME",{"COL_1":"1234567"}).where({"ID":"1"}).run();
+					var new_row = _db.from("TABLE_NAME").where({"ID":1}).get();				
+					equals(new_row.col_1,"1234567", 'Expected "1234567" as the result, result was ' + '"1234567"');
+			    });
+				
+			  });
+        </script>
+    </head>
+    <body>
+        <h1 id="qunit-header">QUnit Test  - localdatabase</h1>
+        <h2 id="qunit-banner"></h2>
+        <h2 id="qunit-userAgent"></h2>
+        <ol id="qunit-tests">
+        </ol>
+    </body>
+</html>
