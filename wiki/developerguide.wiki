@@ -17,4 +17,4 @@
 
 === Unit - test ===
 
-Localdatabase test suites are available on [unit-test.html] . We use QUnit as a unit testing framework. 
+Localdatabase test suites are available on [http://code.google.com/p/localdatabase/source/browse/trunk/localdatabase/unit-test.html unit-test.html] . We use QUnit as a unit testing framework. 
