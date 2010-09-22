@@ -1,11 +1,13 @@
 #labels Phase-Support
-= Schema update =
+== Developer 's guide ==
+
+=== Schema update ===
 
 {{{
  localdb.drop_create(yourschema_map);
 }}}
 
-= Object update =
+=== Object update ===
 
 {{{
   var person = localdb.from("PERSON").where({id:123}).get();
