@@ -1,7 +1,7 @@
 /* Simple JavaScript DB layer supporting Google Gears DB
  * Sets up google.gears.*, which is *the only* supported way to access Gears.
  * By Gregory Desvaux
- * MIT Licensed.
+ * Apache License 2.0 Licensed.
  */
 function Stmt ( db, sql, args)
 {
