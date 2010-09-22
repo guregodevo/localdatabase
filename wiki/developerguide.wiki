@@ -14,3 +14,11 @@
   localdb.update("PERSON",person).where({id:123}).run();
   // person name is updated.
 }}}
+
+=== Unit - test ===
+
+Localdatabase test suites are available on : 
+
+
+
+We use QUnit as a unit testing framework. 
