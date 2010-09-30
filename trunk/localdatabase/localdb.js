@@ -46,6 +46,11 @@ Stmt.prototype.expr_order=function(m) {
 	}
 	return terms.length>0 ? ' order by ' + terms.join( ',  ' ) : '';
 }
+Stmt.prototype.limit=function(s,e) {
+	if (arguments.length>=1) this.append(" limit "+s);
+	if (arguments.length>=2) this.append(", "+e);
+	return this;
+}
 Stmt.prototype.insert=function(table_name,m) {
 	var col = [], val = [];
 	for (var fn in m) {
@@ -165,8 +170,8 @@ LocalDB.prototype.drop_create=function(schema) {
 				var create = "create table if not exists "+table+" (" + col.join(", ") + ")";
 				this.execute(drop);
 				this.execute(create);
-			}								
-		}
+	}								
+}
 LocalDB.prototype.isValid=function(schema) {
 			var schema= (schema===undefined)?this.schema:schema ;
 			var rs = true;
