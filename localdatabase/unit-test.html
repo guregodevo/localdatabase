@@ -92,6 +92,11 @@
 			    {
 					var rows = _db.from("TABLE_NAME").where({id:2}).and({id:1}).order({id:"desc"}).list();
 					equals(rows.length,0, 'Expected 0 as the result, result was ' + rows.length);
+			    });
+			    test("'limit' unit test (1)", function()
+			    {
+					var rows = _db.from("TABLE_NAME").limit(0,1).list();
+					equals(rows.length,1, 'Expected 1 as the result, result was ' + rows.length);
 			    });			    
 			    test("'delete run' unit test (1)", function()
 			    {
