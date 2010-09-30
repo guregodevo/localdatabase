@@ -5,6 +5,8 @@
  */
 function Stmt ( db, sql, args)
 {
+  	if ( !(this instanceof arguments.callee) ) 
+	    return new Stmt(db,sql,args); 
 	this.db = db;
 	this.sql = sql===undefined? "" : sql;
 	this.args = args===undefined ? [] : args;
@@ -21,12 +23,21 @@ Stmt.prototype.val=function(m) {
 	}
 	return v;
 }
-Stmt.prototype.expr_where=function(m) {
+Stmt.prototype.expr=function(m, prefix_str, sep_str) {
 	var terms = [];
 	for (var fn in m) {
 		terms.push(fn + ' = ? ');					
 	}
-	return terms.length>0 ? ' where ' + terms.join( ' and ' ) : '';
+	return terms.length>0 ? ' '+prefix_str+' ' + terms.join(' '+sep_str+' ') : '';
+}
+Stmt.prototype.expr_where=function(m) {
+	return this.expr(m,'where','and');
+}
+Stmt.prototype.expr_or=function(m) {
+	return this.expr(m,'or','or ');
+}
+Stmt.prototype.expr_and=function(m) {
+	return this.expr(m,'and','and ');
 }
 Stmt.prototype.expr_order=function(m) {
 	var terms = [];
@@ -64,6 +75,12 @@ Stmt.prototype.from=function(table_name) {
 }
 Stmt.prototype.where=function(m) {
 	return this.append(this.expr_where(m),this.val(m));
+}
+Stmt.prototype.or=function(m) {
+	return this.append(this.expr_or(m),this.val(m));
+}
+Stmt.prototype.and=function(m) {
+	return this.append(this.expr_and(m),this.val(m));
 }
 Stmt.prototype.order=function(m) {
 	return this.append(this.expr_order(m));
@@ -112,6 +129,7 @@ LocalDB.prototype.getDB = function(name) {
   }
 }
 function LocalDB(name,schema) {
+  if ( !(this instanceof arguments.callee) ) return new LocalDB(name,schema);
   this.db = this.getDB(name);
   this.schema= (schema===undefined)?{}:schema;
 }
@@ -163,17 +181,17 @@ LocalDB.prototype.isValid=function(schema) {
 			return rs;
 		}
 LocalDB.prototype.from=function(table_name) {
-			return new Stmt(this).from(table_name);
+			return Stmt(this).from(table_name);
 }
 LocalDB.prototype.stmt=function(sql,args) {
-			return new Stmt(this,sql,args);
+			return Stmt(this,sql,args);
 }
 LocalDB.prototype.insert=function(m,table_name) {
-			return new Stmt(this).insert(table_name,m);
+			return Stmt(this).insert(table_name,m);
 		}
 LocalDB.prototype.update=function(table_name,m) {
-			return new Stmt(this).update(table_name,m);
+			return Stmt(this).update(table_name,m);
 		}		
 LocalDB.prototype.delete=function(table_name) {
-			return new Stmt(this).delete(table_name);
+			return Stmt(this).delete(table_name);
 		}

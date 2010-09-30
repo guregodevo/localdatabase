@@ -80,6 +80,18 @@
 					equals(rows.length,1, 'Expected 1 as the result, result was ' + rows.length);
 					rows = _db.from("TABLE_NAME").where({col_2:2}).list();					
 					equals(rows.length,2, 'Expected 2 as the result, result was ' + rows.length);
+			    });
+			    test("'where or' unit test (1)", function()
+			    {
+					var rows = _db.from("TABLE_NAME").where({id:2}).or({id:1}).order({id:"desc"}).list();
+					equals(rows.length,2, 'Expected 2 as the result, result was ' + rows.length);
+					equals(rows[0].col_1,2, 'Expected 2 as the result, result was ' + rows[0].col_1);
+					equals(rows[1].col_1,1, 'Expected 1 as the result, result was ' + rows[1].col_1);
+			    });	
+			    test("'where and' unit test (1)", function()
+			    {
+					var rows = _db.from("TABLE_NAME").where({id:2}).and({id:1}).order({id:"desc"}).list();
+					equals(rows.length,0, 'Expected 0 as the result, result was ' + rows.length);
 			    });			    
 			    test("'delete run' unit test (1)", function()
 			    {
